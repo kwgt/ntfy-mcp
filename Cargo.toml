@@ -1,0 +1,50 @@
+[package]
+name = "ntfy-mcp"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92.0"
+
+[dependencies]
+anyhow = "=1.0.104"
+base64 = "=0.22.1"
+clap = { version = "=4.6.7", features = ["derive"] }
+directories = "=6.0.0"
+getrandom = { version = "=0.4.3", default-features = false }
+httpdate = "=1.0.3"
+rustls = { version = "=0.23.46", default-features = false }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+
+[dependencies.reqwest]
+version = "=0.13.5"
+default-features = false
+features = ["rustls", "json", "stream"]
+
+[dependencies.rmcp]
+version = "=3.5.1"
+default-features = false
+features = ["server", "macros", "transport-io"]
+
+[dependencies.tokio]
+version = "=1.53.3"
+features = [
+    "macros",
+    "rt-multi-thread",
+    "time",
+    "fs",
+    "sync",
+    "io-util",
+    "signal",
+]
+
+[dependencies.toml]
+version = "=1.1.8"
+default-features = false
+features = ["std", "serde", "parse", "display"]
+
+[dev-dependencies]
+jsonschema = { version = "=0.59.0", default-features = false }
+
+[dev-dependencies.tokio]
+version = "=1.53.3"
+features = ["test-util"]

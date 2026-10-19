@@ -1,0 +1,2 @@
+ntfy-mcpの非機密添付fixtureです。
+E2のpathとE3のUTF-8直接指定で同じ内容を使います。

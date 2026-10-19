@@ -1,0 +1,402 @@
+{
+  "type": "object",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/NotifySuccess"
+    },
+    {
+      "$ref": "#/$defs/NotifyFailure"
+    }
+  ],
+  "description": "structuredContentに返し、同じJSONをTextContentへ格納する。isErrorはokの反転。",
+  "x-runtime-validation": [
+    "MCP isError == !ok",
+    "receipt aggregated across attempts",
+    "duplicate flag sticky once replay after unknown starts",
+    "last attempt status retained",
+    "HTTP attempt <= 5 seconds; total <= 45 seconds; maximum 4 attempts"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "MessageId": {
+      "type": "string",
+      "description": "検証済みntfyメッセージID。",
+      "pattern": "^[A-Za-z0-9]{12}(?![\\s\\S])",
+      "minLength": 12,
+      "maxLength": 12
+    },
+    "NotifyError": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "input",
+            "attachment",
+            "resource",
+            "internal",
+            "tls",
+            "transport",
+            "auth",
+            "limit",
+            "rate_limit",
+            "server",
+            "http",
+            "protocol",
+            "cancelled"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "description": "分類表に対応する固定機械判別コード。",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "description": "入力値や生のサーバ応答を含めない安全な固定テンプレート。",
+          "minLength": 1
+        },
+        "field": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "該当入力フィールド名。該当なしはnull。入力値を反射しない。"
+        },
+        "stop_reason": {
+          "type": "string",
+          "enum": [
+            "non_retryable",
+            "attempts_exhausted",
+            "budget_exhausted",
+            "retry_after_invalid",
+            "cancelled"
+          ]
+        }
+      },
+      "required": [
+        "category",
+        "code",
+        "message",
+        "field",
+        "stop_reason"
+      ],
+      "additionalProperties": false
+    },
+    "NotifyFailure": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "const": false
+        },
+        "sequence_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SequenceId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "type": "string",
+          "enum": [
+            "not_sent",
+            "unknown",
+            "rejected"
+          ]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "duplicate_possible": {
+          "type": "boolean"
+        },
+        "message_id": {
+          "type": "null"
+        },
+        "http_status": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 100,
+          "maximum": 999
+        },
+        "ntfy_error_code": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "error": {
+          "$ref": "#/$defs/NotifyError"
+        },
+        "wait": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NotifyWait"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "ok",
+        "sequence_id",
+        "receipt",
+        "attempts",
+        "duplicate_possible",
+        "message_id",
+        "http_status",
+        "ntfy_error_code",
+        "error",
+        "wait"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "duplicate_possible": {
+                "const": true
+              }
+            },
+            "required": [
+              "duplicate_possible"
+            ]
+          },
+          "then": {
+            "properties": {
+              "attempts": {
+                "minimum": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "attempts": {
+                "const": 0
+              }
+            },
+            "required": [
+              "attempts"
+            ]
+          },
+          "then": {
+            "properties": {
+              "receipt": {
+                "const": "not_sent"
+              },
+              "duplicate_possible": {
+                "const": false
+              },
+              "http_status": {
+                "type": "null"
+              },
+              "ntfy_error_code": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "description": "失敗結果。errorを必須とし、送信前失敗はattempts=0。系列ID未確定時だけsequence_id=null。"
+    },
+    "NotifySuccess": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "const": true
+        },
+        "sequence_id": {
+          "$ref": "#/$defs/SequenceId"
+        },
+        "receipt": {
+          "type": "string",
+          "const": "confirmed"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "duplicate_possible": {
+          "type": "boolean"
+        },
+        "message_id": {
+          "$ref": "#/$defs/MessageId"
+        },
+        "http_status": {
+          "type": "integer",
+          "const": 200
+        },
+        "ntfy_error_code": {
+          "type": "null"
+        },
+        "error": {
+          "type": "null"
+        },
+        "wait": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NotifyWait"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "ok",
+        "sequence_id",
+        "receipt",
+        "attempts",
+        "duplicate_possible",
+        "message_id",
+        "http_status",
+        "ntfy_error_code",
+        "error",
+        "wait"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "duplicate_possible": {
+                "const": true
+              }
+            },
+            "required": [
+              "duplicate_possible"
+            ]
+          },
+          "then": {
+            "properties": {
+              "attempts": {
+                "minimum": 2
+              }
+            }
+          }
+        }
+      ],
+      "description": "有効な受領応答を検証した成功。端末表示成功を意味しない。"
+    },
+    "NotifyWait": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "retry_after_seconds",
+            "retry_after_date",
+            "rate_limit_default",
+            "exponential",
+            "invalid"
+          ]
+        },
+        "delay_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "最後の選択待機秒。巨大値・不正ではnull。"
+        },
+        "waited_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "実際の再試行待機合計ミリ秒。"
+        },
+        "remaining_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "最後の有効待機期限までの切上げ秒。終了済み0、算出不能null。"
+        },
+        "retry_after_state": {
+          "type": "string",
+          "enum": [
+            "missing",
+            "valid",
+            "invalid",
+            "too_long"
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "delay_seconds",
+        "waited_ms",
+        "remaining_seconds",
+        "retry_after_state"
+      ],
+      "additionalProperties": false,
+      "description": "自動再試行の待機判断。手動再送の許可ではない。待機・期限の整合は実行時に計算する。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "invalid"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "properties": {
+              "delay_seconds": {
+                "type": "null"
+              },
+              "retry_after_state": {
+                "const": "invalid"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "retry_after_state": {
+                "const": "too_long"
+              }
+            },
+            "required": [
+              "retry_after_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "delay_seconds": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "SequenceId": {
+      "type": "string",
+      "description": "ASCII英数字・ハイフン・アンダースコアの系列ID。",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]{1,64}(?![\\s\\S])"
+    }
+  }
+}

@@ -1,0 +1,192 @@
+[
+  {
+    "name": "success",
+    "valid": true,
+    "value": {
+      "ok": true,
+      "sequence_id": "fixture-task",
+      "receipt": "confirmed",
+      "attempts": 1,
+      "duplicate_possible": false,
+      "message_id": "ABCDEFGHIJKL",
+      "http_status": 200,
+      "ntfy_error_code": null,
+      "error": null,
+      "wait": null
+    }
+  },
+  {
+    "name": "before_send",
+    "valid": true,
+    "value": {
+      "ok": false,
+      "sequence_id": "fixture-task",
+      "receipt": "not_sent",
+      "attempts": 0,
+      "duplicate_possible": false,
+      "message_id": null,
+      "http_status": null,
+      "ntfy_error_code": null,
+      "error": {
+        "category": "input",
+        "code": "invalid_input",
+        "message": "入力を確認してください。",
+        "field": "message",
+        "stop_reason": "non_retryable"
+      },
+      "wait": null
+    }
+  },
+  {
+    "name": "http_rejected",
+    "valid": true,
+    "value": {
+      "ok": false,
+      "sequence_id": "fixture-task",
+      "receipt": "rejected",
+      "attempts": 1,
+      "duplicate_possible": false,
+      "message_id": null,
+      "http_status": 403,
+      "ntfy_error_code": 40301,
+      "error": {
+        "category": "auth",
+        "code": "permission_denied",
+        "message": "入力を確認してください。",
+        "field": null,
+        "stop_reason": "non_retryable"
+      },
+      "wait": null
+    }
+  },
+  {
+    "name": "unknown_receipt",
+    "valid": true,
+    "value": {
+      "ok": false,
+      "sequence_id": "fixture-task",
+      "receipt": "unknown",
+      "attempts": 1,
+      "duplicate_possible": false,
+      "message_id": null,
+      "http_status": null,
+      "ntfy_error_code": null,
+      "error": {
+        "category": "transport",
+        "code": "timeout",
+        "message": "入力を確認してください。",
+        "field": null,
+        "stop_reason": "non_retryable"
+      },
+      "wait": null
+    }
+  },
+  {
+    "name": "wait_and_duplicate",
+    "valid": true,
+    "value": {
+      "ok": false,
+      "sequence_id": "fixture-task",
+      "receipt": "unknown",
+      "attempts": 2,
+      "duplicate_possible": true,
+      "message_id": null,
+      "http_status": null,
+      "ntfy_error_code": null,
+      "error": {
+        "category": "transport",
+        "code": "timeout",
+        "message": "入力を確認してください。",
+        "field": null,
+        "stop_reason": "budget_exhausted"
+      },
+      "wait": {
+        "source": "exponential",
+        "delay_seconds": 1,
+        "waited_ms": 1000,
+        "remaining_seconds": 0,
+        "retry_after_state": "missing"
+      }
+    }
+  },
+  {
+    "name": "success_wrong_status",
+    "valid": false,
+    "value": {
+      "ok": true,
+      "sequence_id": "fixture-task",
+      "receipt": "confirmed",
+      "attempts": 1,
+      "duplicate_possible": false,
+      "message_id": "ABCDEFGHIJKL",
+      "http_status": 403,
+      "ntfy_error_code": null,
+      "error": null,
+      "wait": null
+    }
+  },
+  {
+    "name": "missing_error",
+    "valid": false,
+    "value": {
+      "ok": false,
+      "sequence_id": "fixture-task",
+      "receipt": "not_sent",
+      "attempts": 0,
+      "duplicate_possible": false,
+      "message_id": null,
+      "http_status": null,
+      "ntfy_error_code": null,
+      "wait": null
+    }
+  },
+  {
+    "name": "unknown_field",
+    "valid": false,
+    "value": {
+      "ok": true,
+      "sequence_id": "fixture-task",
+      "receipt": "confirmed",
+      "attempts": 1,
+      "duplicate_possible": false,
+      "message_id": "ABCDEFGHIJKL",
+      "http_status": 200,
+      "ntfy_error_code": null,
+      "error": null,
+      "wait": null,
+      "unexpected": true
+    }
+  },
+  {
+    "name": "success_null_id",
+    "valid": false,
+    "value": {
+      "ok": true,
+      "sequence_id": null,
+      "receipt": "confirmed",
+      "attempts": 1,
+      "duplicate_possible": false,
+      "message_id": "ABCDEFGHIJKL",
+      "http_status": 200,
+      "ntfy_error_code": null,
+      "error": null,
+      "wait": null
+    }
+  },
+  {
+    "name": "wrong_attempts_type",
+    "valid": false,
+    "value": {
+      "ok": true,
+      "sequence_id": "fixture-task",
+      "receipt": "confirmed",
+      "attempts": "1",
+      "duplicate_possible": false,
+      "message_id": "ABCDEFGHIJKL",
+      "http_status": 200,
+      "ntfy_error_code": null,
+      "error": null,
+      "wait": null
+    }
+  }
+]

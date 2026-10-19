@@ -1,0 +1,111 @@
+[
+  {
+    "name": "plain",
+    "valid": true,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task"
+    }
+  },
+  {
+    "name": "path",
+    "valid": true,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task",
+      "attachment": {
+        "source": "path",
+        "path": "fixture.txt"
+      }
+    }
+  },
+  {
+    "name": "utf8",
+    "valid": true,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task",
+      "attachment": {
+        "source": "inline",
+        "encoding": "utf8",
+        "data": "添付",
+        "filename": "fixture.txt"
+      }
+    }
+  },
+  {
+    "name": "base64",
+    "valid": true,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task",
+      "attachment": {
+        "source": "inline",
+        "encoding": "base64",
+        "data": "Zml4dHVyZQ==",
+        "filename": "fixture.bin"
+      }
+    }
+  },
+  {
+    "name": "missing_message",
+    "valid": false,
+    "value": {
+      "kind": "completed"
+    }
+  },
+  {
+    "name": "unknown_kind",
+    "valid": false,
+    "value": {
+      "kind": "FAKE_SECRET",
+      "message": "text"
+    }
+  },
+  {
+    "name": "unknown_field",
+    "valid": false,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task",
+      "FAKE_SECRET": "fake"
+    }
+  },
+  {
+    "name": "null_title",
+    "valid": false,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task",
+      "title": null
+    }
+  },
+  {
+    "name": "mixed_attachment",
+    "valid": false,
+    "value": {
+      "kind": "completed",
+      "message": "結果\n```code```",
+      "sequence_id": "fixture-task",
+      "attachment": {
+        "source": "path",
+        "path": "fixture.txt",
+        "data": "FAKE_SECRET"
+      }
+    }
+  },
+  {
+    "name": "wrong_kind_type",
+    "valid": false,
+    "value": {
+      "kind": 3,
+      "message": "text"
+    }
+  }
+]

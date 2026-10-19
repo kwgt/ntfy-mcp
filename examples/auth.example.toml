@@ -1,0 +1,4 @@
+# 認証専用ファイルの例。架空の値であり、利用可能な資格情報ではありません。
+# --auth-fileで指定します。ここには[auth]テーブルを付けません。
+mode = "bearer"
+token = "EXAMPLE_TOKEN"

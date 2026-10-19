@@ -1,0 +1,6 @@
+# 認証なしの最小例。通常起動の前に専用topicを記入してください。
+server_url = "https://ntfy.sh/"
+# topic = "YOUR_TOPIC"
+
+[auth]
+mode = "none"

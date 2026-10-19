@@ -1,0 +1,190 @@
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "progress",
+        "completed",
+        "question",
+        "alert"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "description": "Markdown元本文。Unicodeスカラー数とUTF-8バイト数を検査する。空白のみ・trimで変化する本文を拒否し、添付時は文字としてのバックスラッシュ+nも拒否する。無断変換しない。",
+      "minLength": 1,
+      "maxLength": 1000,
+      "x-runtime-validation": [
+        "Unicode scalar count <= 1000",
+        "UTF-8 bytes <= 4096",
+        "not whitespace-only",
+        "unchanged by ntfy TrimSpace",
+        "with attachment: no literal backslash followed by n"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "省略時は送らない。UTF-8で1024バイト以下。前後空白・改行・制御文字を拒否する。",
+      "minLength": 1,
+      "maxLength": 1024,
+      "x-runtime-validation": [
+        "UTF-8 bytes <= 1024",
+        "unchanged by trim",
+        "no newline or control characters"
+      ]
+    },
+    "sequence_id": {
+      "$ref": "#/$defs/SequenceId"
+    },
+    "attachment": {
+      "$ref": "#/$defs/Attachment"
+    }
+  },
+  "required": [
+    "kind",
+    "message"
+  ],
+  "additionalProperties": false,
+  "description": "任意項目は省略できるがnullは不可。Schemaが満たされても実行時検証の合格を意味しない。",
+  "x-runtime-validation": [
+    "one notification with at most one attachment",
+    "metadata and encoded headers validated before HTTP",
+    "priority and tag derived only from kind"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Attachment": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AttachmentPath"
+        },
+        {
+          "$ref": "#/$defs/AttachmentUtf8"
+        },
+        {
+          "$ref": "#/$defs/AttachmentBase64"
+        }
+      ]
+    },
+    "AttachmentBase64": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "const": "inline"
+        },
+        "encoding": {
+          "type": "string",
+          "const": "base64"
+        },
+        "data": {
+          "type": "string",
+          "description": "標準Base64・正規padding・改行なし。paddingを含む正確な復号長と未使用bitを検査し、確保前と復号後に2000000バイト上限を確認する。",
+          "maxLength": 2666668,
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?(?![\\s\\S])",
+          "x-runtime-validation": [
+            "canonical Base64 padding and unused bits",
+            "decoded bytes <= 2000000 before allocation",
+            "decoded bytes <= 2000000 after decoding"
+          ]
+        },
+        "filename": {
+          "$ref": "#/$defs/Filename"
+        }
+      },
+      "required": [
+        "source",
+        "encoding",
+        "data",
+        "filename"
+      ],
+      "additionalProperties": false
+    },
+    "AttachmentPath": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "const": "path"
+        },
+        "path": {
+          "type": "string",
+          "description": "起動時作業ディレクトリ基準。UTF-8で4096バイト以下。通常ファイル・読取上限・論理期限を実行時に検査する。",
+          "minLength": 1,
+          "maxLength": 4096,
+          "x-runtime-validation": [
+            "UTF-8 bytes <= 4096",
+            "regular file",
+            "read at most 2000001 bytes",
+            "logical read deadline"
+          ]
+        },
+        "filename": {
+          "$ref": "#/$defs/Filename"
+        }
+      },
+      "required": [
+        "source",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "AttachmentUtf8": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "const": "inline"
+        },
+        "encoding": {
+          "type": "string",
+          "const": "utf8"
+        },
+        "data": {
+          "type": "string",
+          "description": "文字列のUTF-8実バイトが2000000以下であることをコピー前に検査する。空データも受理する。",
+          "maxLength": 2000000,
+          "x-runtime-validation": [
+            "UTF-8 bytes <= 2000000 before copy"
+          ]
+        },
+        "filename": {
+          "$ref": "#/$defs/Filename"
+        }
+      },
+      "required": [
+        "source",
+        "encoding",
+        "data",
+        "filename"
+      ],
+      "additionalProperties": false
+    },
+    "Filename": {
+      "type": "string",
+      "description": "表示名。UTF-8で255バイト以下。空白・制御文字・前後trim・パス区切りの検査は実行時にも行う。",
+      "minLength": 1,
+      "maxLength": 255,
+      "not": {
+        "enum": [
+          ".",
+          ".."
+        ]
+      },
+      "pattern": "^[^/\\\\\\r\\n]+(?![\\s\\S])",
+      "x-runtime-validation": [
+        "UTF-8 bytes <= 255",
+        "no control characters",
+        "unchanged by trim"
+      ]
+    },
+    "SequenceId": {
+      "type": "string",
+      "description": "ASCII英数字・ハイフン・アンダースコアの系列ID。",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]{1,64}(?![\\s\\S])"
+    }
+  }
+}
