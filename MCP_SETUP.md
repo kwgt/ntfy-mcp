@@ -46,8 +46,8 @@ URL/topicは自動trimしません。base pathを保持してtopicを1セグメ�
 
 - Linux: 絶対パスの`XDG_CONFIG_HOME`があればその配下の
   `ntfy-mcp/config.toml`。それ以外は`$HOME/.config/ntfy-mcp/config.toml`。
-- Windows: RoamingAppData Known Folder配下の`ntfy-mcp/config/config.toml`。
-  通常は`%APPDATA%`配下です。
+- Windows: LocalAppData Known Folder配下の`ntfy-mcp/config/config.toml`。
+  通常は`%LOCALAPPDATA%`配下です。
 
 明示した`--config`だけを読み、既定ファイルとはマージしません。明示ファイルの
 不存在・読込不良は失敗です。既定ファイルの不存在だけは他の設定で補えます。
@@ -186,6 +186,10 @@ trusted projectだけで使う場合は`.codex/config.toml`という別scopeを�
 user/projectへ重複登録せず、プロジェクトの信頼と有効な設定を確認してください。
 プロセス単位の`codex -c`上書きは永続登録とは別です。
 
+今回の受入で確認したのはプロセス単位の一時設定による接続です。上記の永続登録を
+実施した結果ではありません。一時設定で対象を追加するだけで他のMCP登録が
+無効になるとは限らないため、有効な対象を確認してください。
+
 ## 7. Claude CodeへのSTDIO登録
 
 プロジェクトだけで使うlocal scopeの例です。
@@ -238,8 +242,15 @@ MCP接続後の実通知は、利用者が意図して依頼するときに行�
 ## 公式資料と確認範囲
 
 2026-10-19に公式資料とローカルhelpを照合しました。ローカル版は
-Codex CLI 0.163.0 / Claude Code 2.1.88です。登録・実接続を実測済みとは
-していません。Windows nativeやClaude実機の動作保証を示すものでもありません。
+Codex CLI 0.163.0 / Claude Code 2.1.88です。Claudeの版は資料・help照合時の
+記録で、実接続を確認した版ではありません。
+
+同日、本体0.1.0のLinux上でのCodex一時接続、単一notifyの公開、本文通知の
+実呼出しと結果返却を確認しました。呼出しはApp Server登録MCP APIから行い、
+モデルturnは使っていません。添付2ケースは共有ケースrunnerで確認しました。
+永続登録・実スキル読込・モデルの自律的なツール選択、Codex経由の添付そのものは
+未確認です。Windows nativeやClaude実機の動作保証を示すものではありません。
+送受信環境と結果の詳細は[検証方法と確認範囲](docs/TESTING.md)を参照してください。
 
 - [Codex MCP](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)
 - [Claude Code MCP](https://code.claude.com/docs/en/mcp)

@@ -57,8 +57,15 @@ interface:
 ## 3. 確認範囲と資料
 
 2026-10-19時点の公式資料に基づく手動配置手順です。手元の版は
-Codex CLI 0.163.0 / Claude Code 2.1.88ですが、実配置・実読込・実通知は
-まだ確認していません。Windows/Claude実接続の動作保証を示しません。
+Codex CLI 0.163.0 / Claude Code 2.1.88です。これは資料・help照合時の版で、
+スキルの実配置・実読込を確認した版ではありません。
+
+今回の受入は一時MCP設定を使い、Codex App Server登録MCP API経由の本文通知と、
+共有ケースrunnerによる添付通知を確認しました。スキルの実配置・実読込と、
+スキルを読んだモデルの自律的なツール選択は確認していません。
+通知の確認結果をスキル経由の実行成功へ読み替えず、Windows/Claude実接続の
+動作保証も示しません。詳しい実施経路と未確認範囲は
+[検証方法と確認範囲](docs/TESTING.md)を参照してください。
 
 - [Codex Skills](https://learn.chatgpt.com/docs/build-skills)
 - [Claude Code Skills](https://code.claude.com/docs/en/skills)

@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use directories::ProjectDirs;
+use directories::BaseDirs;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
@@ -310,7 +310,9 @@ pub(super) fn environment() -> Environment {
 /// 取得できた既定パス。
 ///
 pub(super) fn default_path() -> Option<PathBuf> {
-    ProjectDirs::from("", "", "ntfy-mcp")
-        .map(|dirs| dirs.config_dir().join("config.toml"))
+    BaseDirs::new()
+        .map(|dir| {
+            dir.config_local_dir().join(env!("CARGO_PKG_NAME")).to_path_buf()
+        })
 }
 
