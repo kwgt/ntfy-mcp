@@ -453,7 +453,8 @@ fn actual_tools_list_and_invalid_notifications_keep_stdio_alive() {
     let initialized = session.response();
     assert_eq!(initialized["id"], 1);
     assert_eq!(initialized["result"]["serverInfo"]["name"], "ntfy-mcp");
-    assert_eq!(initialized["result"]["serverInfo"]["version"], "0.1.0");
+    assert_eq!(initialized["result"]["serverInfo"]["version"],
+        env!("CARGO_PKG_VERSION"));
     assert!(initialized["result"]["capabilities"]["tools"].is_object());
     /*
      * 実tools/listの二つのSchemaを別々の根として取り出す。

@@ -37,7 +37,7 @@ pub enum Mode {
 ///
 // clap deriveは非公開フィールドからCLI定義を生成する。
 #[derive(Clone, Parser)]
-#[command(name = "ntfy-mcp", version = "0.1.0")]
+#[command(name = "ntfy-mcp", version = env!("CARGO_PKG_VERSION"))]
 pub struct Options {
     /// 設定TOML。
     #[arg(short = 'c', long)]

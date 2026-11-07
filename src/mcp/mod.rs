@@ -153,6 +153,7 @@ impl<T: Transport + 'static> ServerHandler for NotifyAdapter<T> {
     ///
     fn get_info(&self) -> ServerConfig {
         ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
-            .with_server_info(Implementation::new("ntfy-mcp", "0.1.0"))
+            .with_server_info(Implementation::new("ntfy-mcp",
+                env!("CARGO_PKG_VERSION")))
     }
 }
